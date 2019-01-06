@@ -12,6 +12,14 @@ const postCssDefaultConfig = (builder: Builder) => {
   };
 };
 
+function createCssConfig(builder: Builder, spin: Spin, nodeModules: boolean, options: any): any {
+  const config: any = spin.createConfig(builder, 'css', options);
+  if (nodeModules) {
+    delete config.modules;
+  }
+  return config;
+}
+
 export default class CssProcessorPlugin implements ConfigPlugin {
   public configure(builder: Builder, spin: Spin) {
     const stack = builder.stack;
@@ -33,7 +41,7 @@ export default class CssProcessorPlugin implements ConfigPlugin {
             : new RegExp(`^(?!.*\\/node_modules\\/).*\\.${ext}$`),
           use: ([
             { loader: 'isomorphic-style-loader', options: spin.createConfig(builder, 'isomorphicStyle', {}) },
-            { loader: 'css-loader', options: spin.createConfig(builder, 'css', { ...loaderOptions }) }
+            { loader: 'css-loader', options: createCssConfig(builder, spin, nodeModules, { ...loaderOptions }) }
           ] as any[])
             .concat(
               postCssLoader && !nodeModules
@@ -70,7 +78,7 @@ export default class CssProcessorPlugin implements ConfigPlugin {
                     { loader: 'style-loader', options: spin.createConfig(builder, 'style', {}) },
                     {
                       loader: 'css-loader',
-                      options: spin.createConfig(builder, 'css', { ...loaderOptions, importLoaders: 1 })
+                      options: createCssConfig(builder, spin, nodeModules, { ...loaderOptions, importLoaders: 1 })
                     }
                   ] as any[])
                     .concat(
@@ -93,7 +101,7 @@ export default class CssProcessorPlugin implements ConfigPlugin {
                     use: [
                       {
                         loader: 'css-loader',
-                        options: spin.createConfig(builder, 'css', {
+                        options: createCssConfig(builder, spin, nodeModules, {
                           importLoaders: postCssLoader && !nodeModules ? 1 : 0
                         })
                       }
@@ -142,7 +150,7 @@ export default class CssProcessorPlugin implements ConfigPlugin {
                     { loader: 'style-loader', options: spin.createConfig(builder, 'style', {}) },
                     {
                       loader: 'css-loader',
-                      options: spin.createConfig(builder, 'css', { ...loaderOptions, importLoaders: 1 })
+                      options: createCssConfig(builder, spin, nodeModules, { ...loaderOptions, importLoaders: 1 })
                     }
                   ] as any[])
                     .concat(
@@ -164,7 +172,7 @@ export default class CssProcessorPlugin implements ConfigPlugin {
                     { loader: ExtractCSSPlugin.loader, options: spin.createConfig(builder, 'mini-css-extract', {}) },
                     {
                       loader: 'css-loader',
-                      options: spin.createConfig(builder, 'css', {
+                      options: createCssConfig(builder, spin, nodeModules, {
                         importLoaders: postCssLoader && !nodeModules ? 1 : 0
                       })
                     }
