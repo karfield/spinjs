@@ -125,6 +125,7 @@ const createPlugins = (builder: Builder, spin: Spin) => {
           const HtmlWebpackPlugin = builder.require('html-webpack-plugin');
           plugins.push(
             new HtmlWebpackPlugin({
+              ...spin.createConfig(builder, 'html', {}),
               template: builder.htmlTemplate || path.join(__dirname, '../../html-plugin-template.ejs'),
               inject: 'body'
             })
